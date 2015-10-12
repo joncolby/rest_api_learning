@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = RestApiLearning::VERSION
   spec.authors       = ["Jonathan Colby"]
   spec.email         = ["jonathan.colby@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Playing around with Sinatra.}
+  spec.description   = %q{Learning Sinatra.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -19,8 +19,16 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
       
   spec.add_runtime_dependency "sinatra"
+  spec.add_runtime_dependency "haml", "~> 4"
+  spec.add_runtime_dependency "datamapper"
+  spec.add_runtime_dependency "warden"
+  spec.add_runtime_dependency "sinatra-contrib"
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.8"
+  spec.add_development_dependency "shotgun"
+  spec.add_development_dependency "dm-sqlite-adapter"
+  spec.add_development_dependency "sqlite3"
+  
 end
