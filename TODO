@@ -1,0 +1,4 @@
+-user domain model with token
+-ssl/tls
+-create user / generate token / revoke token
+-login with session cookie

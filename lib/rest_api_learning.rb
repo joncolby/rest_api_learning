@@ -3,6 +3,7 @@ require 'sinatra/base'
 require 'sinatra/json'
 require 'haml'
 require 'tilt/haml'
+require 'rack-flash'
 require 'rest_api_learning/routes'
 require 'rest_api_learning/helpers'
 require 'rest_api_learning/token'
@@ -10,9 +11,48 @@ require 'rest_api_learning/domain'
 require 'warden'
 
 class RestApi < Sinatra::Application
+   
+  set :sessions, false
+
+  use Rack::Session::Cookie, :secret  => '1DiAZhC=v&>@A%MC0qS87b?V=qC7m{'
+  use Rack::Flash
+
+  before do
+    cache_control :private, :no_cache, :no_store, :must_revalidate
+  end
   
   not_found do
     halt 404, 'page not found'
+  end
+  
+  get '/user' do
+    haml :user
+  end
+  
+  post '/user' do  
+    u = RestApiLearning::User.new
+    puts params['user']
+    u.username = params['user']['username']
+    u.password = params['user']['password']
+    u.password_confirmation = params['user']['password_confirmation']
+    u.save
+    
+    if(u.saved?)
+      redirect '/users'
+    else
+     u.errors.each do |e|
+      puts e
+     end
+     "sorry, didnt save"
+    end
+    
+  
+  end
+  
+  get '/users' do
+    @users = RestApiLearning::User.all :order => :id
+    puts "users:"
+    puts @users
   end
   
   get '/protected' do
@@ -35,7 +75,7 @@ class RestApi < Sinatra::Application
   
   post '/' do
     n = RestApiLearning::Note.new
-    n.content = params[:content]
+    n.content = h params[:content]   
     n.created_at = Time.now
     n.updated_at = Time.now
     n.save
@@ -94,10 +134,13 @@ class RestApi < Sinatra::Application
   # Configure Warden
   use Warden::Manager do |config|
       config.scope_defaults :default,
+      config.default_strategies => [:access_token, :password],
       # Set your authorization strategy
-      :strategies => [:access_token],
+      :strategies => [:access_token, :password],
       # Route to redirect to when warden.authenticate! returns a false answer.
       :action => '/unauthenticated'
+      config.serialize_into_session {|user| user.id}
+      config.serialize_from_session {|id| RestApiLearning::User.for(:user).find_by_id(id)}
       config.failure_app = self
   end
   
@@ -121,9 +164,35 @@ class RestApi < Sinatra::Application
           !access_granted ? fail!("Could not log in") : success!(access_granted)
       end
   end
+  
+  Warden::Strategies.add(:password) do
+      def valid?
+        params['user']['username'] && params['user']['password']
+      end
+  
+      def authenticate!
+        user = RestApiLearning::User.first(:username  => params['user']['username'])
+        if user.nil?
+          throw(:warden, :message => "The username you entered does not exist.")
+        elsif user.authenticate(params['user']['password'])
+          success!(user)
+        else
+          throw(:warden, :message => "The username and password combination ")
+        end
+      end
+    end
+  
+  Warden::Manager.before_failure do |env,opts|
+    env['REQUEST_METHOD'] = 'POST'
+  end
     
   helpers RestApiLearning::Helpers
   register RestApiLearning::Routes  
+  
+  helpers do
+      include Rack::Utils
+      alias_method :h, :escape_html
+  end
   
   run! if app_file == $0
  

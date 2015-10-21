@@ -3,5 +3,6 @@ module RestApiLearning
     def bar(name)
       "#{name}-bar"
     end
+
   end
 end
