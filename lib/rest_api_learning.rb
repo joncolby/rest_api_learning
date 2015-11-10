@@ -10,6 +10,16 @@ require 'rest_api_learning/token'
 require 'rest_api_learning/domain'
 require 'warden'
 
+=begin
+ https://github.com/charliepark/omniauth-for-sinatra
+ https://github.com/maxjustus/sinatra-authentication
+ http://ididitmyway.herokuapp.com/past/2011/2/22/really_simple_authentication_in_sinatra/
+ http://ididitmyway.herokuapp.com/
+ http://ididitmyway.herokuapp.com/past/2011/2/27/ajax_in_sinatra/
+ http://stackoverflow.com/questions/549/the-definitive-guide-to-form-based-website-authentication
+ http://recipes.sinatrarb.com/p/middleware/twitter_authentication_with_omniauth
+=end
+
 class RestApi < Sinatra::Application
    
   set :sessions, false
