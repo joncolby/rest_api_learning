@@ -1,6 +1,7 @@
 require 'data_mapper'
 require 'bcrypt'
 require 'dm-timestamps'
+require 'securerandom'
 
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/rest_api_learning.db")
 
@@ -12,6 +13,28 @@ module RestApiLearning
     property :complete, Boolean, :required => true, :default => false
     property :created_at, DateTime
     property :updated_at, DateTime
+ end
+ 
+ class Token
+   include DataMapper::Resource
+   
+   timestamps :at
+   
+   property :id, Serial, :key => true
+   property :email_address, String, :length => 4..30, :unique => true, :required => true, :format => :email_address
+   property :description, String, :required => true 
+   property :token, String, :required => true
+   property :host_groups, String
+   property :revoked, Boolean, :default  => false
+   
+   before :save, :generate_token
+   
+   def generate_token
+     self.token = SecureRandom.urlsafe_base64 50
+   end 
+   
+   # token = SecureRandom.urlsafe_base64(50)
+   
  end
  
  class User
@@ -27,6 +50,7 @@ module RestApiLearning
    property :username, String, :length => 4..30, :unique => true, :required => true
                                      
    validates_presence_of :password, :password_confirmation, :if => :password_required?
+   # this compares password with password_confirmation
    validates_confirmation_of :password, :if => :password_required?
    
    before :valid?, :encrypt_password
