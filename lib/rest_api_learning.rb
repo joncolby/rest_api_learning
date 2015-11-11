@@ -9,6 +9,8 @@ require 'rest_api_learning/helpers'
 require 'rest_api_learning/token'
 require 'rest_api_learning/domain'
 require 'warden'
+require 'omniauth_crowd'
+require 'omniauth'
 
 =begin
  https://github.com/charliepark/omniauth-for-sinatra
@@ -21,8 +23,15 @@ require 'warden'
 =end
 
 class RestApi < Sinatra::Application
+  
+  #use OmniAuth::Builder do
+  #  provider :github, "CLIENT_ID", "CLIENT_SECRET"
+  #end
+  use OmniAuth::Builder do
+    provider :crowd, :crowd_server_url=>"https://crowd.mycompanyname.com/crowd", :application_name=>"app", :application_password=>"password"
+  end
    
-  set :sessions, false
+  set :sessions, true
 
   use Rack::Session::Cookie, :secret  => '1DiAZhC=v&>@A%MC0qS87b?V=qC7m{'
   use Rack::Flash

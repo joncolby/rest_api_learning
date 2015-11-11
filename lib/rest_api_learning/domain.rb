@@ -21,6 +21,7 @@ module RestApiLearning
    timestamps :at
    
    property :id, Serial, :key => true
+   property :name, String, :required => true 
    property :email_address, String, :length => 4..30, :unique => true, :required => true, :format => :email_address
    property :description, String, :required => true 
    property :token, String, :required => true

@@ -26,6 +26,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "bcrypt-ruby"
   spec.add_runtime_dependency "bcrypt"
   spec.add_runtime_dependency 'rack-flash3'
+  spec.add_runtime_dependency 'omniauth'
+  spec.add_runtime_dependency 'omniauth_crowd'
     
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
